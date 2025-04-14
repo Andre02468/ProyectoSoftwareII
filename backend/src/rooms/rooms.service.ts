@@ -11,7 +11,7 @@ export class RoomsService {
   constructor(private readonly hotelsService: HotelsService) {}
 
   create(roomDto: RoomDto): Room {
-    const hotelExists = this.hotelsService.findOne(roomDto.hotelId);
+    const hotelExists = this.hotelsService.findById(roomDto.hotelId);
     if (!hotelExists) {
       throw new NotFoundException(`No existe un hotel con id ${roomDto.hotelId}`);
     }
@@ -43,7 +43,7 @@ export class RoomsService {
     const existingRoom = this.findOne(id);
 
     if (roomDto.hotelId !== existingRoom.hotelId) {
-      const hotelExists = this.hotelsService.findOne(roomDto.hotelId);
+      const hotelExists = this.hotelsService.findById(roomDto.hotelId);
       if (!hotelExists) {
         throw new NotFoundException(`No existe un hotel con id ${roomDto.hotelId}`);
       }

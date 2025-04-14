@@ -26,7 +26,7 @@ export class HotelsService {
     return this.hotels;
   }
 
-  findOne(id: number): Hotel {
+  findById(id: number): Hotel {
     const hotel = this.hotels.find(h => h.id === id);
     if (!hotel) {
       throw new NotFoundException(`Hotel con id ${id} no encontrado`);
@@ -35,14 +35,14 @@ export class HotelsService {
   }
 
   update(id: number, hotelDto: HotelDto): Hotel {
-    const hotel = this.findOne(id);
+    const hotel = this.findById(id);
     const updatedHotel = { ...hotel, ...hotelDto };
     this.hotels = this.hotels.map(h => (h.id === id ? updatedHotel : h));
     return updatedHotel;
   }
 
   remove(id: number): void {
-    this.findOne(id);
+    this.findById(id);
     this.hotels = this.hotels.filter(h => h.id !== id);
   }
 }

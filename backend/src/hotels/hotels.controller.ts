@@ -25,7 +25,7 @@ export class HotelsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.hotelsService.findOne(Number(id));
+    return this.hotelsService.findById(Number(id));
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

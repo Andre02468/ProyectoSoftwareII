@@ -25,12 +25,12 @@ describe('HotelsService', () => {
   });
 
   it('debería lanzar un error al buscar un hotel no existente', () => {
-    expect(() => service.findOne(999)).toThrow(NotFoundException);
+    expect(() => service.findById(999)).toThrow(NotFoundException);
   });
 
   it('debería eliminar un hotel', () => {
     const hotel = service.create({ name: 'Hotel Test', location: 'Ciudad Test' });
     service.remove(hotel.id);
-    expect(() => service.findOne(hotel.id)).toThrow(NotFoundException);
+    expect(() => service.findById(hotel.id)).toThrow(NotFoundException);
   });
 });
