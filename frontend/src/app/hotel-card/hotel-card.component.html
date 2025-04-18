@@ -1,0 +1,27 @@
+<div class="pokemon-card">
+  <div class="card-border">
+    <div class="card-inner">
+      <div class="card-image">
+        <img [src]="imageUrl" alt="{{title}}">
+      </div>
+      <div class="card-content">
+        <h2 class="card-title">{{title}}</h2>
+        <div class="card-price">{{price}}</div>
+        <div class="card-rating">
+          @for (star of getStarsArray(); track star) {
+            @if (star <= rating) {
+              <img src="/estrella.png" alt="estrella" class="star-icon">
+            }
+          }
+          ({{rating | number:'1.1-1'}})
+        </div>
+        <ul class="card-features">
+          @for (feature of features; track feature) {
+            <li>{{feature}}</li>
+          }
+        </ul>
+        <button class="card-button">Reservar ahora</button>
+      </div>
+    </div>
+  </div>
+</div>

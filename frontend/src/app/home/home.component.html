@@ -1,0 +1,43 @@
+<div class="home-container">
+    <!-- Banner principal -->
+    <section class="hero-banner">
+      <div class="banner-content">
+        <h1>{{ bannerTitle }}</h1>
+        <p>{{ bannerSubtitle }}</p>
+      </div>
+    </section>
+  
+    <!-- Contenedor de tarjetas -->
+    <div class="hotels-grid">
+      <app-hotel-card 
+        *ngFor="let hotel of hotels"
+        [imageUrl]="hotel.imageUrl"
+        [title]="hotel.title"
+        [price]="hotel.price"
+        [rating]="hotel.rating"
+        [features]="hotel.features">
+      </app-hotel-card>
+    </div>
+  
+    <!-- Sección adicional -->
+    <section class="info-section">
+      <h2>¿Por qué elegirnos?</h2>
+      <div class="features">
+        <div class="feature">
+          <span>🏖️</span>
+          <h3>Playas exclusivas</h3>
+          <p>Acceso a las mejores playas privadas de la región</p>
+        </div>
+        <div class="feature">
+          <span>⭐</span>
+          <h3>Calidad garantizada</h3>
+          <p>Todos nuestros hoteles pasan estrictos controles de calidad</p>
+        </div>
+        <div class="feature">
+          <span>💳</span>
+          <h3>Reserva segura</h3>
+          <p>Sistema de pago 100% seguro con certificación SSL</p>
+        </div>
+      </div>
+    </section>
+  </div>

@@ -1,0 +1,205 @@
+/* Estilos base de la tarjeta */
+.pokemon-card {
+  font-family: 'Arial', sans-serif;
+  width: 300px;
+  perspective: 1000px;
+  margin: 20px;
+  position: relative;
+}
+
+/* Borde legendario */
+.card-border {
+  background: linear-gradient(145deg, #d6d6d6, #ffffff);
+  border-radius: 15px;
+  padding: 6px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s ease;
+  z-index: 1;
+}
+
+/* Efecto INICIAL - Gradiente lineal animado */
+.card-border::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(
+    45deg,
+    #40150A 0%, 
+    #5B1F0F 10%,
+    #7B3311 20%,
+    #934C1A 30%,
+    #AB6422 40%,
+    #BB8130 50%,
+    #756A34 60%,
+    #474E30 70%,
+    #2F3C29 80%,
+    #162A22 90%
+  );
+  background-size: 400% 400%;
+  z-index: -1;
+  border-radius: 16px;
+  animation: magicPortal 6s linear infinite;
+  filter: blur(1px) saturate(1.8);
+  opacity: 0.98;
+  transition: all 0.5s ease;
+}
+
+/* Efecto HOVER - Radial centrado (sin líneas blancas) */
+.card-border:hover::after {
+  background: radial-gradient(
+    circle at center,
+    #BB8130 10%,
+    #AB6422 20%,
+    #934C1A 40%,
+    #5B1F0F 60%,
+    #40150A 70%,
+    #002c1a 100%
+  );
+  animation: pulse 3s ease infinite alternate;
+  filter: blur(1px) saturate(2);
+}
+
+/* Eliminamos el ::before que generaba líneas blancas */
+.card-border::before {
+  display: none;
+}
+
+/* Animaciones */
+@keyframes magicPortal {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.9; }
+  100% { transform: scale(1.05); opacity: 1; }
+}
+
+/* Contenido interior de la tarjeta */
+.card-inner {
+  background: rgb(255, 255, 255);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+}
+
+/* Efectos hover en la tarjeta */
+.pokemon-card:hover .card-border {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+}
+
+/* Resto de estilos */
+.card-image {
+  height: 180px;
+  overflow: hidden;
+  position: relative;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.5s ease;
+}
+
+.pokemon-card:hover .card-image img {
+  transform: scale(1.08);
+}
+
+.card-content {
+  padding: 15px;
+  text-align: center;
+}
+
+.card-title {
+  color: #002b12;
+  margin: 0 0 10px 0;
+  font-size: 1.4em;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+.pokemon-card:hover .card-title {
+  color: #ff7b00;
+}
+
+.card-price {
+  color: #e97c00;
+  font-size: 1.3em;
+  font-weight: bold;
+  margin-bottom: 10px;
+  transition: transform 0.3s;
+}
+
+.pokemon-card:hover .card-price {
+  transform: scale(1.05);
+  color: #003607;
+}
+
+/* Estilos para las estrellas */
+.card-rating {
+  color: #f39c12;
+  margin-bottom: 10px;
+  font-size: 1.1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+.star-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.pokemon-card:hover .star-icon {
+  transform: scale(1.2);
+}
+
+.card-features {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0;
+  text-align: left;
+}
+
+.card-features li {
+  padding: 5px 0;
+  border-bottom: 1px solid #2b2b2b;
+  color: #311a00;
+  transition: transform 0.3s;
+}
+
+.pokemon-card:hover .card-features li {
+  transform: translateX(5px);
+}
+
+.card-features li:last-child {
+  border-bottom: none;
+}
+
+.card-button {
+  background: linear-gradient(to right, #dd6400, #5B1F0F ,#004e21);
+  color: rgb(255, 255, 255);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.3s;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.card-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+}
