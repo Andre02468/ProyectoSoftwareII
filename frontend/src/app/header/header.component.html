@@ -1,0 +1,83 @@
+<!-- HEADER SUPERIOR (usuario + notificaciones) -->
+<header class="main-header">
+  <!-- Foto de usuario -->
+  <div class="user-circle">
+    <div class="user-photo"></div>
+  </div>
+
+  <!-- Espacio central (vacío, para balance visual) -->
+  <div class="header-center"></div>
+
+  <!-- Notificaciones -->
+  <div class="notifications">
+    <img src="/notificaciones.png" alt="notificaciones" class="star-icon">
+    <span class="notification-badge">3</span>
+  </div>
+</header>
+
+<div class="compact-search-container">
+  <div class="compact-search-bar">
+    <!-- Filtro Destino -->
+    <div class="compact-filter" (click)="toggleFilter('destination')" [class.active]="isActive('destination')">
+      <div class="compact-filter-label">¿A dónde vas?</div>
+      <div class="compact-filter-value">{{selectedDestination || 'Elige un destino'}}</div>
+      <div class="compact-dropdown" *ngIf="activeFilter === 'destination'">
+        <!-- Contenido dropdown destino -->
+        <input type="text" [(ngModel)]="destinationSearch" placeholder="Buscar destino..." (click)="$event.stopPropagation()">
+        <div class="dropdown-option" *ngFor="let dest of filteredDestinations" 
+             (click)="selectDestination(dest); $event.stopPropagation()">
+          {{dest}}
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtro Fechas -->
+    <div class="compact-filter" (click)="toggleFilter('dates')" [class.active]="isActive('dates')">
+      <div class="compact-filter-label">Fechas</div>
+      <div class="compact-filter-value">
+        <span>{{checkInDate ? (checkInDate | date:'dd/MM') : 'Llegada'}}</span>
+        <span> - </span>
+        <span>{{checkOutDate ? (checkOutDate | date:'dd/MM') : 'Salida'}}</span>
+      </div>
+      <div class="compact-dropdown" *ngIf="activeFilter === 'dates'">
+        <!-- Contenido dropdown fechas -->
+        <div class="date-picker">
+          <input type="date" [(ngModel)]="checkInDate" (click)="$event.stopPropagation()">
+          <input type="date" [(ngModel)]="checkOutDate" (click)="$event.stopPropagation()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtro Huéspedes -->
+    <div class="compact-filter" (click)="toggleFilter('guests')" [class.active]="isActive('guests')">
+      <div class="compact-filter-label">Huéspedes</div>
+      <div class="compact-filter-value">{{totalGuests}} {{totalGuests === 1 ? 'huésped' : 'huéspedes'}}</div>
+      <div class="compact-dropdown" *ngIf="activeFilter === 'guests'">
+        <!-- Contenido dropdown huéspedes -->
+        <div class="guest-control" (click)="$event.stopPropagation()">
+          <span>Adultos:</span>
+          <button (click)="adjustGuests('adults', -1)">-</button>
+          {{guests.adults}}
+          <button (click)="adjustGuests('adults', 1)">+</button>
+        </div>
+        <div class="guest-control" (click)="$event.stopPropagation()">
+          <span>Niños:</span>
+          <button (click)="adjustGuests('children', -1)">-</button>
+          {{guests.children}}
+          <button (click)="adjustGuests('children', 1)">+</button>
+        </div>
+        <div class="guest-control" (click)="$event.stopPropagation()">
+          <span>Habitaciones:</span>
+          <button (click)="adjustGuests('rooms', -1)">-</button>
+          {{guests.rooms}}
+          <button (click)="adjustGuests('rooms', 1)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón Buscar -->
+    <button class="compact-search-btn" (click)="performSearch()">
+      Buscar
+    </button>
+  </div>
+</div>

@@ -1,17 +1,17 @@
 /* Estilos base de la tarjeta */
 .pokemon-card {
   font-family: 'Arial', sans-serif;
-  width: 300px;
+  width: 250px;
   perspective: 1000px;
-  margin: 20px;
+  margin: 15px;
   position: relative;
 }
 
 /* Borde legendario */
 .card-border {
   background: linear-gradient(145deg, #d6d6d6, #ffffff);
-  border-radius: 15px;
-  padding: 6px;
+  border-radius: 12px;
+  padding: 5px;
   position: relative;
   overflow: hidden;
   transition: all 0.5s ease;
@@ -41,7 +41,7 @@
   );
   background-size: 400% 400%;
   z-index: -1;
-  border-radius: 16px;
+  border-radius: 14px;
   animation: magicPortal 6s linear infinite;
   filter: blur(1px) saturate(1.8);
   opacity: 0.98;
@@ -82,21 +82,21 @@
 /* Contenido interior de la tarjeta */
 .card-inner {
   background: rgb(255, 255, 255);
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
   position: relative;
-  box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
 }
 
 /* Efectos hover en la tarjeta */
 .pokemon-card:hover .card-border {
   transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.4);
 }
 
 /* Resto de estilos */
 .card-image {
-  height: 180px;
+  height: 150px;
   overflow: hidden;
   position: relative;
 }
@@ -113,14 +113,14 @@
 }
 
 .card-content {
-  padding: 15px;
+  padding: 12px;
   text-align: center;
 }
 
 .card-title {
   color: #002b12;
-  margin: 0 0 10px 0;
-  font-size: 1.4em;
+  margin: 0 0 8px 0;
+  font-size: 1.2em;
   font-weight: bold;
   transition: color 0.3s;
 }
@@ -131,9 +131,9 @@
 
 .card-price {
   color: #e97c00;
-  font-size: 1.3em;
+  font-size: 1.1em;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   transition: transform 0.3s;
 }
 
@@ -145,8 +145,8 @@
 /* Estilos para las estrellas */
 .card-rating {
   color: #f39c12;
-  margin-bottom: 10px;
-  font-size: 1.1em;
+  margin-bottom: 8px;
+  font-size: 1em;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -154,8 +154,8 @@
 }
 
 .star-icon {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   object-fit: contain;
   transition: transform 0.2s ease;
 }
@@ -167,12 +167,12 @@
 .card-features {
   list-style: none;
   padding: 0;
-  margin: 15px 0;
+  margin: 12px 0;
   text-align: left;
 }
 
 .card-features li {
-  padding: 5px 0;
+  padding: 4px 0;
   border-bottom: 1px solid #2b2b2b;
   color: #311a00;
   transition: transform 0.3s;
@@ -190,11 +190,11 @@
   background: linear-gradient(to right, #dd6400, #5B1F0F ,#004e21);
   color: rgb(255, 255, 255);
   border: none;
-  padding: 10px 20px;
+  padding: 8px 16px;
   border-radius: 50px;
   font-weight: bold;
   cursor: pointer;
-  margin-top: 10px;
+  margin-top: 8px;
   transition: all 0.3s;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
