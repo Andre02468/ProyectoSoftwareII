@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Component, HostListener, ElementRef } from '@angular/core';
+import { Component, HostListener, ElementRef, signal } from '@angular/core';
+import { NotificationPanelComponent } from '../notification-panel/notification-panel.component'; 
 
 @Component({
   selector: 'app-header',
   standalone: true,
   
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NotificationPanelComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
@@ -98,5 +99,23 @@ filterDestinations() {
 // Añade esta función para manejar el estado activo
 isActive(filterName: string): boolean {
   return this.activeFilter === filterName;
+}
+
+showNotificationPanel = signal(false);
+
+notificationCount = signal(2); // Valor inicial basado en notificaciones no leídas
+
+toggleNotificationPanel(event: Event) {
+  event.stopPropagation();
+  this.showNotificationPanel.update((value: any) => !value);
+}
+
+closeNotificationPanel() {
+  this.showNotificationPanel.set(false);
+}
+
+onNotificationRead(id: number) {
+  console.log('Notificación leída:', id);
+  this.notificationCount.update((count: number) => Math.max(0, count - 1));
 }
 }

@@ -1,0 +1,193 @@
+.notification-tray {
+  position: fixed;
+  top: 0;
+  right: -400px;
+  width: 380px;
+  height: 100vh;
+  background: rgba(30, 30, 30, 0.85); /* Fondo oscuro semi-transparente */
+  backdrop-filter: blur(20px); /* Efecto de desenfoque fuerte */
+  -webkit-backdrop-filter: blur(20px); /* Para Safari */
+  backdrop-filter: blur(0.3rem);
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+  transition: right 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  z-index: 1001;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.notification-tray.open {
+  right: 0;
+}
+
+.tray-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  backdrop-filter: blur(0.3rem);
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.2); /* Header más oscuro */
+}
+
+.tray-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #fff; /* Texto blanco */
+  font-weight: 500;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.7);
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #fff;
+}
+
+.notification-scroll-area {
+  flex: 1;
+  backdrop-filter: blur(0.3rem);
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.notification-card {
+  display: flex;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1); /* Fondo muy transparente */
+  backdrop-filter: blur(0.3rem);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.notification-card.unread {
+  backdrop-filter: blur(0.3rem);
+  background: rgba(4, 92, 62, 0.25); /* Azul transparente */
+  border-left: 3px solid rgba(0, 32, 19, 0.7);
+}
+
+.notification-card:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.notification-icon {
+  font-size: 1.5rem;
+  margin-right: 1rem;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-content h4 {
+  margin: 0 0 0.3rem 0;
+  color: #fff; /* Texto blanco */
+  font-weight: 500;
+}
+
+.notification-content p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8); /* Texto gris claro */
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.notification-time {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6); /* Texto gris más claro */
+}
+
+.notification-status {
+  margin-left: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.unread-dot {
+  width: 8px;
+  height: 8px;
+  background: #002920; /* Azul */
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(0, 49, 30, 0.7);
+}
+
+.tray-footer {
+  padding: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  background: rgba(0, 0, 0, 0.2); /* Footer más oscuro */
+}
+
+.footer-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.9); /* Azul claro */
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.footer-btn:hover {
+  color: #ffffff; /* Azul más brillante */
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Efecto de overlay mejorado */
+.notification-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6); /* Overlay más oscuro */
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.notification-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Personalización de la scrollbar */
+.notification-scroll-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notification-scroll-area::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.notification-scroll-area::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.notification-scroll-area::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}

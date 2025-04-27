@@ -8,10 +8,26 @@
   <!-- Espacio central (vacío, para balance visual) -->
   <div class="header-center"></div>
 
-  <!-- Notificaciones -->
-  <div class="notifications">
-    <img src="/notificaciones.png" alt="notificaciones" class="star-icon">
-    <span class="notification-badge">3</span>
+  <div class="notifications-container">
+    <div class="notifications" (click)="toggleNotificationPanel($event)">
+      <img src="/notificaciones.png" alt="notificaciones" class="star-icon">
+      @if (notificationCount() > 0) {
+        <span class="notification-badge">
+          {{ notificationCount() }}
+        </span>
+      }
+    </div>
+    
+    <app-notification-panel 
+      [isOpen]="showNotificationPanel()"
+      (markAsRead)="onNotificationRead($event)"
+      (closePanel)="closeNotificationPanel()">
+    </app-notification-panel>
+    
+    @if (showNotificationPanel()) {
+      <div class="notification-overlay" 
+           (click)="closeNotificationPanel()"></div>
+    }
   </div>
 </header>
 

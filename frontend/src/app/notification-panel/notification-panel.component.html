@@ -1,0 +1,36 @@
+<div class="notification-tray" [class.open]="isOpen()">
+    <div class="tray-header">
+      <h3>Bandeja de Notificaciones</h3>
+      <button class="close-btn" (click)="closePanel.emit()">×</button>
+    </div>
+    
+    <div class="notification-scroll-area">
+      <div *ngFor="let notification of notifications" 
+           class="notification-card" 
+           [class.unread]="!notification.read"
+           (click)="onMarkAsRead(notification.id)">
+        
+        <div class="notification-icon">{{ notification.icon || '🔔' }}</div>
+        
+        <div class="notification-content">
+          <h4>{{ notification.title }}</h4>
+          <p>{{ notification.message }}</p>
+          <span class="notification-time">{{ notification.time }}</span>
+        </div>
+        
+        <div class="notification-status" *ngIf="!notification.read">
+          <span class="unread-dot"></span>
+        </div>
+      </div>
+      
+      <div class="empty-state" *ngIf="notifications.length === 0">
+        No tienes notificaciones nuevas
+      </div>
+    </div>
+    
+    <div class="tray-footer">
+      <button class="footer-btn" (click)="onClearAll()">
+        Marcar todas como leídas
+      </button>
+    </div>
+  </div>
