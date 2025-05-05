@@ -1,23 +1,78 @@
 version: '3.8'
 
 services:
-  backend:
-    container_name: backend
+  users:
+    container_name: users
     build:
-      context: ./backend
+      context: ./users
       dockerfile: Dockerfile
     ports:
-      - 3000:3000
+      - 3001:3001
     volumes:
-      - ./backend:/app
+      - ./users:/app
     command: npm run start:dev
-  frontend:
-    container_name: frontend
+
+  hotels:
+    container_name: hotels
     build:
-      context: ./frontend
+      context: ./hotels
       dockerfile: Dockerfile
     ports:
-      - 4200:4200
+      - 3002:3002
     volumes:
-      - ./frontend:/app
-    command: npm start
+      - ./hotels:/app
+    command: npm run start:dev
+
+  reservations:
+    container_name: reservations
+    build:
+      context: ./reservations
+      dockerfile: Dockerfile
+    ports:
+      - 3003:3003
+    volumes:
+      - ./reservations:/app
+    command: npm run start:dev
+
+  notifications:
+    container_name: notifications
+    build:
+      context: ./notifications
+      dockerfile: Dockerfile
+    ports:
+      - 3004:3004
+    volumes:
+      - ./notifications:/app
+    command: npm run start:dev
+  
+  reviews:
+    container_name: reviews
+    build:
+      context: ./reviews
+      dockerfile: Dockerfile
+    ports:
+      - 3005:3005
+    volumes:
+      - ./reviews:/app
+    command: npm run start:dev
+
+  reports:
+    container_name: reports
+    build:
+      context: ./reports
+      dockerfile: Dockerfile
+    ports:
+      - 3006:3006
+    volumes:
+      - ./reports:/app
+    command: npm run start:dev
+  #frontend:
+    #container_name: frontend
+    #build:
+      #context: ./frontend
+      #dockerfile: Dockerfile
+    #ports:
+      #- 4200:4200
+    #volumes:
+      #- ./frontend:/app
+    #command: npm start
