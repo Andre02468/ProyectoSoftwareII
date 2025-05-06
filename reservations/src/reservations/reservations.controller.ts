@@ -1,23 +1,7 @@
-import {
-  Controller,
-  Post,
-  Get,
-  Patch,
-  Param,
-  Body,
-  ParseIntPipe,
-  UseGuards
-} from '@nestjs/common';
-import {
-  ApiTags,
-  ApiCreatedResponse,
-  ApiOkResponse,
-  ApiNotFoundResponse,
-  ApiBadRequestResponse
-} from '@nestjs/swagger';
+import {Controller,Post,Get,Patch,Param,Body,UseGuards} from '@nestjs/common';
+import {ApiTags,ApiCreatedResponse,ApiOkResponse,ApiNotFoundResponse,ApiBadRequestResponse} from '@nestjs/swagger';
 import { ReservationService } from './reservations.service';
 import { CreateReservationDto } from './reservations.dto';
-import { Reservation } from './entities/reservations.entity';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 
@@ -28,14 +12,14 @@ export class ReservationController {
 
   @Post()
   @ApiCreatedResponse({ description: 'Reserva creada correctamente en estado pending' })
-  create(@Body() createReservationDto: CreateReservationDto): Reservation {
-    return this.reservationService.create(createReservationDto);
+  async create(@Body() createReservationDto: CreateReservationDto) {
+    return await this.reservationService.create(createReservationDto);
   }
 
   @Get()
   @ApiOkResponse({ description: 'Listado de todas las reservas' })
-  findAll(): Reservation[] {
-    return this.reservationService.findAll();
+  async findAll() {
+    return await this.reservationService.findAll();
   }
 
   @Patch(':id/status')
@@ -44,15 +28,22 @@ export class ReservationController {
   @ApiOkResponse({ description: 'Estado de la reserva actualizado correctamente' })
   @ApiNotFoundResponse({ description: 'Reserva no encontrada' })
   @ApiBadRequestResponse({ description: 'Acción no válida o reserva no en estado pending' })
-  updateStatus(
-    @Param('id', ParseIntPipe) id: number,
+  async updateStatus(
+    @Param('id') id: string, // usamos string porque es ObjectId
     @Body('action') action: 'accepted' | 'rejected'
-  ): Reservation {
-    return this.reservationService.updateStatus(id, action);
+  ) {
+    return await this.reservationService.updateStatus(id, action);
   }
+
+  @Patch(':id/cancel')
+  @ApiOkResponse({ description: 'Reserva cancelada correctamente' })
+  @ApiNotFoundResponse({ description: 'Reserva no encontrada' })
+  async cancelReservation(@Param('id') id: string) {
+    return await this.reservationService.cancel(id);
+  }
+
   @Post('accept')
-  async acceptReservation(@Body() reservationData: any) {
-    // Aceptar la reserva (lógica específica de tu aplicación)
+  async acceptReservation(@Body() reservationData: { clienteEmail: string }) {
     await this.reservationService.notifyReservationAccepted(reservationData.clienteEmail);
     return { message: 'Reserva aceptada y notificación enviada.' };
   }

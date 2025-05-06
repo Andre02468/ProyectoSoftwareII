@@ -25,6 +25,7 @@ export class AuthService {
       user: {
         _id: userObj._id, // Ahora puedes acceder al _id de manera correcta
         username: userObj.username,
+        email: userObj.email,
         roles: userObj.roles,
       },
     };
