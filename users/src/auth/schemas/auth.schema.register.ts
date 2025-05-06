@@ -1,16 +1,21 @@
-import { Schema, Document } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
-// Esquema de Mongoose basado en el RegisterDto
-export const RegisterSchema = new Schema({
-  username: { type: String, required: true },
-  password: { type: String, required: true },
-  roles: { type: [String], default: [] },  // Los roles son opcionales, por lo que si no se pasa, por defecto será un array vacío
-});
+export type RegisterDocument = Register & Document;
 
-// Interfaz para el tipo de documento
-export interface Register extends Document {
-  id: string;
+@Schema({ timestamps: true }) 
+export class Register {
+  @Prop({ required: true }) 
   username: string;
+
+  @Prop({ required: true })
   password: string;
-  roles?: string[];
+
+  @Prop({ required: true, unique: true }) 
+  email: string;
+
+  @Prop({ type: [String], default: [] }) 
+  roles: string[];
 }
+
+export const RegisterSchema = SchemaFactory.createForClass(Register);
