@@ -1,76 +1,73 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { Reservation } from './entities/reservations.entity';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Reservation, ReservationDocument } from './schemas/reservations.schema';
 import { CreateReservationDto } from './reservations.dto';
 import axios from 'axios';
 
 @Injectable()
 export class ReservationService {
-  private reservations: Reservation[] = [];
-  private idCounter = 1;
+  constructor(
+    @InjectModel(Reservation.name)
+    private readonly reservationModel: Model<ReservationDocument>,
+  ) {}
 
-  create(createReservationDto: CreateReservationDto): Reservation {
-    const { userId, hotelId, roomId, startDate, endDate } = createReservationDto;
-
-    const newReservation: Reservation = {
-      id: this.idCounter++,
-      userId,
-      hotelId,
-      roomId,
-      startDate: new Date(startDate),
-      endDate: new Date(endDate),
+  async create(createReservationDto: CreateReservationDto): Promise<Reservation> {
+    const createdReservation = new this.reservationModel({
+      ...createReservationDto,
+      startDate: new Date(createReservationDto.startDate),
+      endDate: new Date(createReservationDto.endDate),
       status: 'pending',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+    });
 
-    this.reservations.push(newReservation);
-
-    return newReservation;
+    return createdReservation.save();
   }
 
-  findAll(): Reservation[] {
-    return this.reservations;
+  async findAll(): Promise<Reservation[]> {
+    return this.reservationModel.find().exec();
   }
 
-  updateStatus(id: number, action: 'accepted' | 'rejected'): Reservation {
-    const reservation = this.reservations.find(r => r.id === id);
+  async updateStatus(id: string, action: 'accepted' | 'rejected'): Promise<Reservation> {
+    const reservation = await this.reservationModel.findOne({ _id: id });
+
     if (!reservation) {
       throw new NotFoundException(`Reserva con id ${id} no encontrada`);
     }
+
     if (reservation.status !== 'pending') {
       throw new BadRequestException(`Solo se puede gestionar una reserva pendiente`);
     }
-  
+
     if (action === 'accepted') {
-      reservation.status = 'confirmed';
+      reservation.status = 'accepted'; // 🔧 CORREGIDO
     } else if (action === 'rejected') {
       reservation.status = 'cancelled';
     } else {
       throw new BadRequestException(`Acción no válida`);
     }
-  
-    reservation.updatedAt = new Date();
-    return reservation;
+
+    return reservation.save();
   }
-  
-  
-  cancel(id: number): Reservation {
-    const reservation = this.reservations.find(r => r.id === id);
+
+  async cancel(id: string): Promise<Reservation> {
+    const reservation = await this.reservationModel.findOne({ _id: id });
+
     if (!reservation) {
       throw new NotFoundException(`Reserva con id ${id} no encontrada`);
     }
+
     if (reservation.status === 'cancelled') {
       throw new BadRequestException(`La reserva ya se encuentra cancelada`);
     }
+
     reservation.status = 'cancelled';
-    reservation.updatedAt = new Date();
-    return reservation;
+    return reservation.save();
   }
 
   async notifyReservationAccepted(clienteEmail: string) {
     try {
       const response = await axios.post('http://localhost:3000/notifications', {
-        userEmail: clienteEmail, // email del cliente o del hotel
+        userEmail: clienteEmail,
         type: 'reserva_aceptada',
         message: 'Tu reserva ha sido aceptada por el hotel.',
       });
@@ -81,4 +78,3 @@ export class ReservationService {
     }
   }
 }
-
