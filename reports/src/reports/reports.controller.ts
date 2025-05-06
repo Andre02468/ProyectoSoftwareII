@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { ReportDto } from './reports.dto';
 
@@ -10,5 +10,9 @@ export class ReportsController {
   @Get()
   async getReport(@Query() dto: ReportDto) {
     return this.reportsService.generateReport(dto);
+  }
+  @Post()
+  async createReport(@Body() createReportDto: ReportDto) {
+    return this.reportsService.createReport(createReportDto);
   }
 }

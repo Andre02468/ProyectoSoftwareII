@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 @Schema({ timestamps: true })
-export class Reservation {
+export class Reports {
   @Prop({ required: true })
   hotelId: string;
 
@@ -10,17 +10,15 @@ export class Reservation {
   roomId: string;
 
   @Prop({ required: true })
-  userId: string;
+  start: Date; 
 
   @Prop({ required: true })
-  checkIn: Date;
-
-  @Prop({ required: true })
-  checkOut: Date;
+  end: Date;  
 
   @Prop({ required: true, default: 'confirmed' })
   status: 'pending' | 'confirmed' | 'cancelled';
 }
 
-export type ReservationDocument = Reservation & Document;
-export const ReservationSchema = SchemaFactory.createForClass(Reservation);
+export type ReportsDocument = Reports & Document;
+export const ReportsSchema = SchemaFactory.createForClass(Reports);
+
