@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HotelCardComponent } from '../hotel-card/hotel-card.component';
+import { HotelCardComponent } from '../../components/hotel-card/hotel-card.component';
 
 @Component({
   selector: 'app-home',
