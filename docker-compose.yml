@@ -1,78 +1,199 @@
 version: '3.8'
 
 services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: hotel_reservation_system
+      MYSQL_USER: nestuser
+      MYSQL_PASSWORD: nestpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
   users:
-    container_name: users
+    users:
     build:
-      context: ./users
+      context: ./backend/users
       dockerfile: Dockerfile
     ports:
-      - 3001:3001
+      - 3001:3000
+    env_file:
+      - ./backend/users/.env
+    container_name: users
+
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USERNAME: nestuser
+      DB_PASSWORD: nestpassword
+      DB_DATABASE: hotel_reservation_system
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - app-network
     volumes:
-      - ./users:/app
+      - ./backend/users:/app
+      - /app/node_modules
     command: npm run start:dev
 
   hotels:
     container_name: hotels
     build:
-      context: ./hotels
+      context: ./backend/hotels
       dockerfile: Dockerfile
     ports:
-      - 3002:3002
+      - 3002:3000
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USERNAME: nestuser
+      DB_PASSWORD: nestpassword
+      DB_DATABASE: hotel_reservation_system
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - app-network
     volumes:
-      - ./hotels:/app
+      - ./backend/hotels:/app
+      - /app/node_modules
     command: npm run start:dev
 
   reservations:
     container_name: reservations
     build:
-      context: ./reservations
+      context: ./backend/reservations
       dockerfile: Dockerfile
     ports:
-      - 3003:3003
+      - 3003:3000
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USERNAME: nestuser
+      DB_PASSWORD: nestpassword
+      DB_DATABASE: hotel_reservation_system
+    depends_on:
+      mysql:
+        condition: service_healthy
+      hotels:
+        condition: service_started
+    networks:
+      - app-network
     volumes:
-      - ./reservations:/app
+      - ./backend/reservations:/app
+      - /app/node_modules
     command: npm run start:dev
 
   notifications:
     container_name: notifications
     build:
-      context: ./notifications
+      context: ./backend/notifications
       dockerfile: Dockerfile
     ports:
-      - 3004:3004
+      - 3004:3000
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USERNAME: nestuser
+      DB_PASSWORD: nestpassword
+      DB_DATABASE: hotel_reservation_system
+      EMAIL_HOST: smtp.example.com
+      EMAIL_PORT: 587
+      EMAIL_USER: user@example.com
+      EMAIL_PASS: password
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - app-network
     volumes:
-      - ./notifications:/app
+      - ./backend/notifications:/app
+      - /app/node_modules
     command: npm run start:dev
   
   reviews:
     container_name: reviews
     build:
-      context: ./reviews
+      context: ./backend/reviews
       dockerfile: Dockerfile
     ports:
-      - 3005:3005
+      - 3005:3000
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USERNAME: nestuser
+      DB_PASSWORD: nestpassword
+      DB_DATABASE: hotel_reservation_system
+    depends_on:
+      mysql:
+        condition: service_healthy
+      hotels:
+        condition: service_started
+      users:
+        condition: service_started
+    networks:
+      - app-network
     volumes:
-      - ./reviews:/app
+      - ./backend/reviews:/app
+      - /app/node_modules
     command: npm run start:dev
 
   reports:
     container_name: reports
     build:
-      context: ./reports
+      context: ./backend/reports
       dockerfile: Dockerfile
     ports:
-      - 3006:3006
+      - 3006:3000
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USERNAME: nestuser
+      DB_PASSWORD: nestpassword
+      DB_DATABASE: hotel_reservation_system
+    depends_on:
+      mysql:
+        condition: service_healthy
+      reservations:
+        condition: service_started
+    networks:
+      - app-network
     volumes:
-      - ./reports:/app
+      - ./backend/reports:/app
+      - /app/node_modules
     command: npm run start:dev
-  #frontend:
-    #container_name: frontend
-    #build:
-      #context: ./frontend
-      #dockerfile: Dockerfile
-    #ports:
-      #- 4200:4200
-    #volumes:
-      #- ./frontend:/app
-    #command: npm start
+
+  # frontend:
+  #   container_name: frontend
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 4200:4200
+  #   volumes:
+  #     - ./frontend:/app
+  #   command: npm start
+  #   depends_on:
+  #     - users
+  #     - hotels
+  #   networks:
+  #     - app-network
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge

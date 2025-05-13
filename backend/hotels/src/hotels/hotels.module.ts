@@ -1,24 +1,23 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { HotelsService } from './hotels.service';
 import { HotelsController } from './hotels.controller';
-import { Hotel, HotelSchema } from './schemas/hotels.schema';
+import { Hotel } from './entities/hotels.entities';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { JwtStrategy } from 'src/jwt.strategy';
-
+import { JwtStrategy } from '../jwt.strategy';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Hotel.name, schema: HotelSchema }]),
+    TypeOrmModule.forFeature([Hotel]),
     JwtModule.register({
-      secret: 'secretKey', // Usa una clave secreta más segura
-      signOptions: { expiresIn: '60s' }, // Tiempo de expiración del token
+      secret: 'secretKey',
+      signOptions: { expiresIn: '60s' },
     }),
     PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
-  providers: [HotelsService, JwtStrategy], // Añadir la estrategia JWT al array de providers
+  providers: [HotelsService, JwtStrategy],
   controllers: [HotelsController],
-  exports: [HotelsService, MongooseModule],
+  exports: [HotelsService],
 })
 export class HotelsModule {}

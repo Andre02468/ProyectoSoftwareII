@@ -1,14 +1,26 @@
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { ReportsController } from './reports.controller';
-import { ReportsService } from './reports.service';
-import { Reports, ReportsSchema } from './schemas/reports.schema';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Module({
-  imports: [
-    MongooseModule.forFeature([{ name: Reports.name, schema: ReportsSchema }]),
-  ],
-  controllers: [ReportsController],
-  providers: [ReportsService],
-})
-export class ReportsModule {}
+@Entity()
+export class Reservation {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  hotelId: number;
+
+  @Column({ length: 100 })
+  clientName: string;
+
+  @Column({ length: 100 })
+  clientEmail: string;
+
+  @Column({ type: 'datetime' })
+  date: Date;
+
+  @Column({
+    type: 'enum',
+    enum: ['pending', 'accepted', 'rejected', 'cancelled'],
+    default: 'pending'
+  })
+  status: string;
+}

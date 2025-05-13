@@ -10,12 +10,18 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
+  @ApiOperation({ summary: 'Registrar nuevo usuario' })
+  @ApiResponse({ status: 201, description: 'Usuario registrado exitosamente' })
+  @ApiResponse({ status: 409, description: 'El usuario ya existe' })
   async register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }
 
-  @HttpCode(HttpStatus.OK)
   @Post('login')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Iniciar sesión' })
+  @ApiResponse({ status: 200, description: 'Inicio de sesión exitoso' })
+  @ApiResponse({ status: 401, description: 'Credenciales inválidas' })
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }

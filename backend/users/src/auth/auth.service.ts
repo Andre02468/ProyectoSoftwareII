@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+import { UsersService } from '../users/users.service';
 import { LoginDto } from './dtos/login.dto';
 import { RegisterDto } from './dtos/register.dto';
 
@@ -12,29 +13,37 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
+    // Verificar si el usuario ya existe
     const userExists = await this.usersService.findByUsername(registerDto.username);
     if (userExists) {
       throw new ConflictException('El usuario ya existe');
     }
-    const newUser = await this.usersService.create(registerDto);
-    // Usamos toObject() para convertir el documento de Mongoose a un objeto plano
-    const userObj = newUser.toObject(); // Convierte el documento a un objeto plano
+
+    // Hashear la contraseña
+    const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+    
+    // Crear el usuario
+    const newUser = await this.usersService.create({
+      ...registerDto,
+      password: hashedPassword,
+    });
 
     return {
       message: 'Usuario registrado exitosamente',
       user: {
-        _id: userObj._id, // Ahora puedes acceder al _id de manera correcta
-        username: userObj.username,
-        email: userObj.email,
-        roles: userObj.roles,
+        id: newUser.id,
+        username: newUser.username,
+        email: newUser.email,
+        roles: newUser.roles,
       },
     };
   }
 
-  async validateUser(username: string, password: string) {
+  async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findByUsername(username);
-    if (user && user.password === password) {
-      const { password, ...result } = user.toObject();  // Convierte el documento a un objeto plano
+    
+    if (user && await bcrypt.compare(pass, user.password)) {
+      const { password, ...result } = user;
       return result;
     }
     return null;
@@ -45,7 +54,13 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Credenciales inválidas');
     }
-    const payload = { username: user.username, sub: user._id, roles: user.roles };  // Accede a _id
+    
+    const payload = { 
+      username: user.username, 
+      sub: user.id, 
+      roles: user.roles 
+    };
+    
     return {
       access_token: this.jwtService.sign(payload),
     };

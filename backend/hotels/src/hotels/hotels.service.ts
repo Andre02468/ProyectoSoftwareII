@@ -1,72 +1,47 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { HotelDocument, Hotel as HotelModel, HotelSchema } from './schemas/hotels.schema';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Hotel } from './entities/hotels.entities';
 import { HotelDto } from './hotel.dto';
-
-export interface Hotel {
-  id: string;
-  name: string;
-  location: string;
-  description?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
 
 @Injectable()
 export class HotelsService {
   constructor(
-    @InjectModel('Hotel') private hotelModel: Model<HotelDocument>,
-  ){}
+    @InjectRepository(Hotel)
+    private hotelRepository: Repository<Hotel>,
+  ) {}
 
   async create(hotelDto: HotelDto): Promise<Hotel> {
-    const nuevoHotel = new this.hotelModel(hotelDto);
-    const hotelGuardado = await nuevoHotel.save();
-    return this.mapToHotelInterface(hotelGuardado);
+    const hotel = this.hotelRepository.create(hotelDto);
+    return this.hotelRepository.save(hotel);
   }
 
   async findAll(): Promise<Hotel[]> {
-    const hoteles = await this.hotelModel.find().lean().exec();
-    return hoteles.map(this.mapToHotelInterface);
+    return this.hotelRepository.find({ relations: ['habitaciones'] });
   }
 
-  async findOne(id: string): Promise<Hotel> {
-    const hotel = await this.hotelModel.findById(id).lean().exec();
+  async findOne(id: number): Promise<Hotel> {
+    const hotel = await this.hotelRepository.findOne({ 
+      where: { id },
+      relations: ['habitaciones']
+    });
+    
     if (!hotel) {
       throw new NotFoundException(`Hotel con id ${id} no encontrado`);
     }
-    return this.mapToHotelInterface(hotel);
+    
+    return hotel;
   }
 
-  async update(id: string, hotelDto: HotelDto): Promise<Hotel> {
-    const hotelActualizado = await this.hotelModel
-      .findByIdAndUpdate(id, hotelDto, { new: true })
-      .lean()
-      .exec();
+  async update(id: number, hotelDto: HotelDto): Promise<Hotel> {
+    await this.hotelRepository.update(id, hotelDto);
+    return this.findOne(id);
+  }
 
-    if (!hotelActualizado) {
+  async remove(id: number): Promise<void> {
+    const result = await this.hotelRepository.delete(id);
+    if (result.affected === 0) {
       throw new NotFoundException(`Hotel con id ${id} no encontrado`);
     }
-
-    return this.mapToHotelInterface(hotelActualizado);
-  }
-
-  async remove(id: string): Promise<void> {
-    const hotel = await this.hotelModel.findById(id).exec();
-    if (!hotel) {
-      throw new NotFoundException(`Hotel con id ${id} no encontrado`);
-    }
-    await this.hotelModel.findByIdAndDelete(id).exec();
-  }
-
-  private mapToHotelInterface(doc: any): Hotel {
-    return {
-      id: doc._id?.toString() || doc.id,
-      name: doc.name,
-      location: doc.location,
-      description: doc.description,
-      createdAt: doc.createdAt,
-      updatedAt: doc.updatedAt,
-    };
   }
 }

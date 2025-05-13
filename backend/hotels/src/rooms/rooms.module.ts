@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { RoomsService } from './rooms.service';
 import { RoomsController } from './rooms.controller';
-import { Room, RoomSchema } from './schemas/rooms.schema';
-import { HotelsModule } from '../hotels/hotels.module'; // Importa HotelsModule si no lo has hecho ya
+import { Habitacion } from './entities/rooms.entity';
+import { Hotel } from '../hotels/entities/hotels.entities';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Room.name, schema: RoomSchema }]), // Registra el modelo Room
-    HotelsModule, // Asegúrate de que HotelsModule está importado si lo necesitas
+    TypeOrmModule.forFeature([Habitacion, Hotel]),
   ],
   providers: [RoomsService],
   controllers: [RoomsController],

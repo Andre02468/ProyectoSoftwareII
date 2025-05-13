@@ -1,75 +1,82 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Habitacion } from './entities/rooms.entity';
 import { RoomDto } from './rooms.dto';
-import { HotelsService } from '../hotels/hotels.service';
-import { Room, RoomDocument } from './schemas/rooms.schema';
+import { Hotel } from '../hotels/entities/hotels.entities';
 
 @Injectable()
 export class RoomsService {
   constructor(
-    @InjectModel(Room.name) private roomModel: Model<RoomDocument>, 
-    private readonly hotelsService: HotelsService,
+    @InjectRepository(Habitacion)
+    private roomRepository: Repository<Habitacion>,
+    @InjectRepository(Hotel)
+    private hotelRepository: Repository<Hotel>,
   ) {}
 
-  // Crear una nueva habitación
-  async create(roomDto: RoomDto): Promise<Room> {
-    const hotelExists = await this.hotelsService.findOne(roomDto.hotelId);
-    if (!hotelExists) {
+  async create(roomDto: RoomDto): Promise<Habitacion> {
+    const hotel = await this.hotelRepository.findOne({ 
+      where: { id: roomDto.hotelId }
+    });
+    
+    if (!hotel) {
       throw new NotFoundException(`No existe un hotel con id ${roomDto.hotelId}`);
     }
 
-    // Crear la habitación y guardarla en la base de datos
-    const newRoom = new this.roomModel({
+    const room = this.roomRepository.create({
       ...roomDto,
-      hotelId: roomDto.hotelId, // Asegurarse de que el hotelId sea del tipo correcto
+      hotel
     });
 
-    return await newRoom.save();
+    return this.roomRepository.save(room);
   }
 
-  // Obtener todas las habitaciones
-  async findAll(): Promise<Room[]> {
-    return await this.roomModel.find().exec();
+  async findAll(): Promise<Habitacion[]> {
+    return this.roomRepository.find({ relations: ['hotel'] });
   }
 
-  // Obtener habitaciones de un hotel específico
-  async findByHotel(hotelId: string): Promise<Room[]> {
-    return await this.roomModel.find({ hotelId }).exec();
+  async findByHotel(hotelId: number): Promise<Habitacion[]> {
+    return this.roomRepository.find({ 
+      where: { hotel: { id: hotelId } },
+      relations: ['hotel']
+    });
   }
 
-  // Buscar una habitación por id
-  async findOne(id: number): Promise<Room> {
-    const room = await this.roomModel.findById(id).exec();
-    if (!room) throw new NotFoundException(`Habitación con id ${id} no encontrada`);
+  async findOne(id: number): Promise<Habitacion> {
+    const room = await this.roomRepository.findOne({ 
+      where: { id },
+      relations: ['hotel']
+    });
+    
+    if (!room) {
+      throw new NotFoundException(`Habitación con id ${id} no encontrada`);
+    }
+    
     return room;
   }
 
-  // Actualizar una habitación existente
-async update(id: number, roomDto: RoomDto): Promise<Room> {
-  const existingRoom = await this.findOne(id);
+  async update(id: number, roomDto: RoomDto): Promise<Habitacion> {
+    const room = await this.findOne(id);
+    const hotel = await this.hotelRepository.findOne({ 
+      where: { id: roomDto.hotelId }
+    });
 
-  if (roomDto.hotelId !== existingRoom.hotelId) {
-    const hotelExists = await this.hotelsService.findOne(roomDto.hotelId);
-    if (!hotelExists) {
+    if (!hotel) {
       throw new NotFoundException(`No existe un hotel con id ${roomDto.hotelId}`);
     }
+
+    await this.roomRepository.update(id, {
+      ...roomDto,
+      hotel
+    });
+
+    return this.findOne(id);
   }
 
-  const updatedRoom = await this.roomModel.findByIdAndUpdate(id, roomDto, { new: true }).exec();
-
-  if (!updatedRoom) {
-    throw new NotFoundException(`Habitación con id ${id} no encontrada para actualizar`);
-  }
-
-  return updatedRoom;
-}
-
-
-  // Eliminar una habitación
   async remove(id: number): Promise<void> {
-    const room = await this.findOne(id);
-    if (!room) throw new NotFoundException(`Habitación con id ${id} no encontrada`);
-    await this.roomModel.findByIdAndDelete(id).exec();
+    const result = await this.roomRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Habitación con id ${id} no encontrada`);
+    }
   }
 }

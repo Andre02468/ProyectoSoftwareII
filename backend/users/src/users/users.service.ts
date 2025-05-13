@@ -1,24 +1,28 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User, UserDocument } from './schemas/users.schema'; // Asegúrate de tener UserDocument
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './entities/users.entity';
 import { UserDto } from './users.dto';
+import { RegisterDto } from '../auth/dtos/register.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+  ) {}
 
-  async create(userDto: UserDto): Promise<User> {
-    const createdUser = new this.userModel(userDto);
-    return createdUser.save();
-  }
+  async create(userData: RegisterDto): Promise<User> {
+  const user = this.userRepository.create(userData);
+  return this.userRepository.save(user);
+}
 
   async findAll(): Promise<User[]> {
-    return this.userModel.find().exec();
+    return this.userRepository.find();
   }
 
-  async findOne(id: string): Promise<User> {
-    const user = await this.userModel.findById(id).exec();
+  async findOne(id: number): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException(`Usuario con id ${id} no encontrado`);
     }
@@ -26,22 +30,18 @@ export class UsersService {
   }
 
   async findByUsername(username: string): Promise<User | null> {
-    return this.userModel.findOne({ username }).exec();
+    return this.userRepository.findOne({ where: { username } });
   }
 
-  async update(id: string, userDto: UserDto): Promise<User> {
-    const updatedUser = await this.userModel.findByIdAndUpdate(id, userDto, { new: true }).exec();
-    if (!updatedUser) {
-      throw new NotFoundException(`Usuario con id ${id} no encontrado`);
-    }
-    return updatedUser;
+  async update(id: number, userDto: UserDto): Promise<User> {
+    await this.userRepository.update(id, userDto);
+    return this.findOne(id);
   }
 
-  async remove(id: string): Promise<void> {
-    const user = await this.findOne(id);
-    if (!user) {
+  async remove(id: number): Promise<void> {
+    const result = await this.userRepository.delete(id);
+    if (result.affected === 0) {
       throw new NotFoundException(`Usuario con id ${id} no encontrado`);
     }
-    await this.userModel.findByIdAndDelete(id).exec();
   }
 }

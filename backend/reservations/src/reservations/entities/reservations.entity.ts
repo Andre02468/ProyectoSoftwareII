@@ -1,13 +1,27 @@
-export type ReservationStatus = 'pending' | 'confirmed' | 'cancelled';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { User } from '../../../users/entities/user.entity';
+import { Habitacion } from '../../../rooms/entities/rooms.entity';
 
-export interface Reservation {
-  id: number;
-  userId: number;
-  hotelId: number;
-  roomId: number;
-  startDate: Date;
-  endDate: Date;
-  status: ReservationStatus;
-  createdAt: Date;
-  updatedAt: Date;
+@Entity()
+export class Reserva {
+  @PrimaryGeneratedColumn()
+  res_id: number;
+
+  @ManyToOne(() => User)
+  usuario: User;
+
+  @ManyToOne(() => Habitacion)
+  habitacion: Habitacion;
+
+  @Column({ type: 'date' })
+  res_fechaInicio: Date;
+
+  @Column({ type: 'date' })
+  res_fechaFin: Date;
+
+  @Column({ length: 15, default: 'Pendiente' })
+  res_estado: string;
+
+  @Column({ type: 'date' })
+  res_fechaCreacion: Date;
 }

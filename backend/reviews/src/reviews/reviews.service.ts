@@ -1,30 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Review } from './schemas/reviews.schema';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Review } from './entities/review.entity';
 import { ReviewDto } from './reviews.dto';
 
 @Injectable()
 export class ReviewsService {
-  constructor(@InjectModel(Review.name) private model: Model<Review>) {}
+  constructor(
+    @InjectRepository(Review)
+    private reviewRepository: Repository<Review>,
+  ) {}
 
   create(dto: ReviewDto) {
-    return this.model.create(dto);
+    const review = this.reviewRepository.create(dto);
+    return this.reviewRepository.save(review);
   }
 
-  findAllByHotel(hotelId: string) {
-    return this.model.find({ hotelId }).exec();
+  findAllByHotel(hotelId: number) {
+    return this.reviewRepository.find({ 
+      where: { hotelId },
+      order: { createdAt: 'DESC' }
+    });
   }
 
-  findOne(id: string) {
-    return this.model.findById(id).exec();
+  findOne(id: number) {
+    return this.reviewRepository.findOne({ where: { id } });
   }
 
-  update(id: string, dto: Partial<ReviewDto>) {
-    return this.model.findByIdAndUpdate(id, dto, { new: true }).exec();
+  update(id: number, dto: Partial<ReviewDto>) {
+    return this.reviewRepository.update(id, dto);
   }
 
-  remove(id: string) {
-    return this.model.findByIdAndDelete(id).exec();
+  remove(id: number) {
+    return this.reviewRepository.delete(id);
   }
 }

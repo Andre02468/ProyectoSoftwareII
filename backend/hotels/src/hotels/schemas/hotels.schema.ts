@@ -1,18 +1,26 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Habitacion } from '../../rooms/entities/rooms.entity';
 
-export type HotelDocument = Hotel & Document;
-
-@Schema()
+@Entity('hoteles')
 export class Hotel {
-  @Prop({ required: true })
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ length: 100, nullable: false })
   name: string;
 
-  @Prop({ required: true })
+  @Column({ length: 255, nullable: false })
   location: string;
 
-  @Prop()
-  description?: string;
-}
+  @Column({ type: 'text', nullable: true })
+  description: string;
 
-export const HotelSchema = SchemaFactory.createForClass(Hotel);
+  @OneToMany(() => Habitacion, habitacion => habitacion.hotel)
+  habitaciones: Habitacion[];
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  updatedAt: Date;
+}
